@@ -9,6 +9,7 @@ class Node{
         int travelTime;
         bool visited;
         Node* nextNode;
+        //Node* prevNode; //do i need this 
 
         Node(string name, int travelTime, bool visited){
             this->name = name;
@@ -16,40 +17,66 @@ class Node{
             this->visited = visited;
             this->nextNode = nullptr;
         }
+        Node(){
+            this->name = "";
+            this->travelTime = INT_MAX;
+            this->visited = NULL;
+            this->nextNode = nullptr;
+        }
 };
 
 class linkedList{
     private:
         Node* head;
-        Node* tail;
 
     public:
         linkedList(Node *head){
             this->head = head;
-            tail = nullptr;
         }
 
         //add node to end of list
-        void push(string name, int travelTime, bool visited){
-            Node* newNode = new Node(name, travelTime, visited);
-            tail = newNode;
-            tail->nextNode = nullptr;
+        void append(string name, int travelTime, bool visited){
+            Node* currNode = head;
+            while(currNode->nextNode != nullptr){
+                currNode = currNode->nextNode;
+            }
+            currNode->nextNode = new Node(name, travelTime, visited);
         }
 
         //overload in case node is passed
-        void push(Node* node){
-            tail = node;
-            tail->nextNode;
+        void append(Node* node){
+            Node* currNode = head;
+            while(currNode->nextNode != nullptr){
+                currNode = currNode->nextNode;
+            }
+            currNode->nextNode = node;
         }
         
-        void insert(string name, int travelTime, bool visited){
-            Node* newNode = new Node(name, travelTime, visited);
-            newNode->nextNode = head;
-            head = newNode;
+        //add node to start of list
+        void push(Node* node){
+            Node* temp = head;
+            head = node;
+            head->nextNode = temp;
+        }
+
+        //another overload
+        void push(string name, int travelTime, bool visited){
+            Node* temp = head;
+            head = new Node(name, travelTime, visited);
+            head->nextNode = temp;
+        }
+
+        void insert(Node* left, Node* right, Node* data){
+            
         }
 
         void print(){
-            cout << head->name << endl;
+            Node* currNode = head;
+            while(currNode->nextNode != nullptr){
+                cout << currNode->name << "->";
+                currNode = currNode->nextNode;
+            }
+            cout << currNode->name << endl;
         }
 };
 
@@ -71,9 +98,16 @@ class edge{
 int main() 
 { 
     Node* cityA = new Node("Pittsburgh", 10, true);
-    Node* cityB = new Node("Pilly", 40, false);
+    Node* cityB = new Node("Philly", 40, false);
+    Node* cityC = new Node("Bublakandia", 100, false);
+    Node* cityD = new Node("Throckmortonia", 25, false);
+    Node* cityE = new Node("Nuuk Greenland", 100, false);
+    Node* cityF = new Node();
     linkedList* list = new linkedList(cityA);
-    list->push(cityA);
+    list->append(cityB);
+    list->append(cityC);
+    list->print();
+    list->push(cityD);
     list->print();
 
     return 0; 
