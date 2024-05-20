@@ -5,42 +5,55 @@ using namespace std;
 
 class Node{
     public:
+        int id;
         string name;
         int travelTime;
         bool visited;
         Node* nextNode;
         //Node* prevNode; //do i need this 
 
-        Node(string name, int travelTime, bool visited){
+        Node(int id, string name, int travelTime, bool visited){
+            this->id = id;
             this->name = name;
             this->travelTime = travelTime;
             this->visited = visited;
             this->nextNode = nullptr;
         }
         Node(){
+            this->id = 0;
             this->name = "";
             this->travelTime = INT_MAX;
-            this->visited = NULL;
+            this->visited = false;
             this->nextNode = nullptr;
         }
 };
 
-class linkedList{
+class LinkedList{
     private:
         Node* head;
 
     public:
-        linkedList(Node *head){
+        LinkedList(Node *head){
             this->head = head;
         }
 
+        //destructor
+        ~LinkedList(){
+            Node* current = head;
+            while(current != nullptr){
+                Node* toDelete = current;
+                current = current->nextNode;
+                delete toDelete;
+            }
+        }
+
         //add node to end of list
-        void append(string name, int travelTime, bool visited){
+        void append(int id, string name, int travelTime, bool visited){
             Node* currNode = head;
             while(currNode->nextNode != nullptr){
                 currNode = currNode->nextNode;
             }
-            currNode->nextNode = new Node(name, travelTime, visited);
+            currNode->nextNode = new Node(id, name, travelTime, visited);
         }
 
         //overload in case node is passed
@@ -60,14 +73,18 @@ class linkedList{
         }
 
         //another overload
-        void push(string name, int travelTime, bool visited){
+        void push(int id, string name, int travelTime, bool visited){
             Node* temp = head;
-            head = new Node(name, travelTime, visited);
+            head = new Node(id, name, travelTime, visited);
             head->nextNode = temp;
         }
 
         void insert(Node* left, Node* right, Node* data){
             
+        }
+
+        string getHead(){
+            return head->name;
         }
 
         void print(){
@@ -80,15 +97,31 @@ class linkedList{
         }
 };
 
-class map{
+class AdjacencyList{
     private:
         int numNodes;
-        vector<linkedList> paths;
+        vector<LinkedList> *path;
+    
+    public:
+        // AdjacencyList(int numNodes){ //needs default LinkedList constructor
+        //     this->numNodes = numNodes;
+        //     this->path = new vector<LinkedList>(numNodes);
+        // }
 
-        //map()
+        void changeHeadNode(string name){
+            for(int i = 0; i < path->size(); i++){
+                
+            }
+        }
+        
+        void addEdge(Node* start, Node* end){
+            //path[].append(end);
+
+        }
+        
 };
 
-class edge{
+class Edge{
     public:
         string start;
         string end;
@@ -97,18 +130,24 @@ class edge{
   
 int main() 
 { 
-    Node* cityA = new Node("Pittsburgh", 10, true);
-    Node* cityB = new Node("Philly", 40, false);
-    Node* cityC = new Node("Bublakandia", 100, false);
-    Node* cityD = new Node("Throckmortonia", 25, false);
-    Node* cityE = new Node("Nuuk Greenland", 100, false);
+    Node* cityA = new Node(0, "Pittsburgh", 10, true);
+    Node* cityB = new Node(1, "Philly", 40, false);
+    Node* cityC = new Node(2, "Bublakandia", 100, false);
+    Node* cityD = new Node(3, "Throckmortonia", 25, false);
+    Node* cityE = new Node(4, "Nuuk Greenland", 100, false);
     Node* cityF = new Node();
-    linkedList* list = new linkedList(cityA);
+    LinkedList* list = new LinkedList(cityA);
     list->append(cityB);
     list->append(cityC);
     list->print();
     list->push(cityD);
     list->print();
+
+    //AdjacencyList* map = new AdjacencyList(5);
+
+    delete list;
+    delete cityE;
+    delete cityF;
 
     return 0; 
 } 
