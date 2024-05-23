@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <climits>
 
 using namespace std; 
 
@@ -33,8 +34,8 @@ class LinkedList{
         Node* head;
 
     public:
-        LinkedList(Node *head){
-            this->head = head;
+        LinkedList(){
+            this->head = nullptr;
         }
 
         //destructor
@@ -50,6 +51,12 @@ class LinkedList{
         //add node to end of list
         void append(int id, string name, int travelTime, bool visited){
             Node* currNode = head;
+
+            if(head == nullptr){
+                head = new Node(id, name, travelTime, visited);
+                return;
+            }
+
             while(currNode->nextNode != nullptr){
                 currNode = currNode->nextNode;
             }
@@ -58,11 +65,19 @@ class LinkedList{
 
         //overload in case node is passed
         void append(Node* node){
+            Node* newNode = new Node(node->id, node->name, node->travelTime, node->visited);
+            
             Node* currNode = head;
+
+            if(head == nullptr){
+                head = newNode;
+                return;
+            }
+
             while(currNode->nextNode != nullptr){
                 currNode = currNode->nextNode;
             }
-            currNode->nextNode = node;
+            currNode->nextNode = newNode;
         }
         
         //add node to start of list
@@ -83,12 +98,26 @@ class LinkedList{
             
         }
 
+        void setHead(Node* head){
+            this->head = head;
+        }
+
+        //overload again
+        void setHead(int id, string name, int travelTime, bool visited){
+            this->head = new Node(id, name, travelTime, visited);
+        }
+
         string getHead(){
             return head->name;
         }
 
         void print(){
             Node* currNode = head;
+            
+            if(currNode == nullptr){
+                cout << "List is empty";
+            }
+            
             while(currNode->nextNode != nullptr){
                 cout << currNode->name << "->";
                 currNode = currNode->nextNode;
@@ -98,25 +127,42 @@ class LinkedList{
 };
 
 class AdjacencyList{
-    private:
-        int numNodes;
-        vector<LinkedList> *path;
-    
     public:
-        // AdjacencyList(int numNodes){ //needs default LinkedList constructor
-        //     this->numNodes = numNodes;
-        //     this->path = new vector<LinkedList>(numNodes);
-        // }
+        int numNodes;
+        vector<LinkedList> *paths;
 
-        void changeHeadNode(string name){
-            for(int i = 0; i < path->size(); i++){
-                
-            }
+        AdjacencyList(int numNodes){
+            this->numNodes = numNodes;
+            this->paths = new vector<LinkedList>(numNodes);
+        }
+
+        ~AdjacencyList(){
+            delete paths;
+        }
+
+        void addNode(Node* node){
+            (*paths)[node->id].setHead(node);
         }
         
         void addEdge(Node* start, Node* end){
-            //path[].append(end);
+            (*paths)[start->id].append(end);
+            (*paths)[end->id].append(start);
+        }
 
+
+        void printPath(int pathId){
+            (*paths)[pathId].print();
+        }
+
+        void printPaths(){
+            for(int i = 0; i < numNodes; i++){
+                if((*paths)[i].getHead() != ""){
+                    (*paths)[i].print();
+                }
+                else{
+                    cout << "Path is Empty!" << endl;
+                }
+            }
         }
         
 };
@@ -130,24 +176,33 @@ class Edge{
   
 int main() 
 { 
-    Node* cityA = new Node(0, "Pittsburgh", 10, true);
-    Node* cityB = new Node(1, "Philly", 40, false);
-    Node* cityC = new Node(2, "Bublakandia", 100, false);
-    Node* cityD = new Node(3, "Throckmortonia", 25, false);
-    Node* cityE = new Node(4, "Nuuk Greenland", 100, false);
-    Node* cityF = new Node();
-    LinkedList* list = new LinkedList(cityA);
-    list->append(cityB);
-    list->append(cityC);
-    list->print();
-    list->push(cityD);
-    list->print();
+    Node* cityA = new Node(0, "0", 10, true);
+    Node* cityB = new Node(1, "1", 40, false);
+    Node* cityC = new Node(2, "2", 100, false);
+    Node* cityD = new Node(3, "3", 25, false);
+    Node* cityE = new Node(4, "4", 100, false);
 
-    //AdjacencyList* map = new AdjacencyList(5);
+    AdjacencyList* map = new AdjacencyList(5);
+    map->addNode(cityA);
+    map->addNode(cityB);
+    map->addNode(cityC);
+    map->addNode(cityD);
+    map->addNode(cityE);
 
-    delete list;
-    delete cityE;
-    delete cityF;
+
+    map->addEdge(cityA, cityB); 
+    map->addEdge(cityA, cityD);
+    map->addEdge(cityB, cityC);
+    map->addEdge(cityB, cityE);
+    map->addEdge(cityC, cityD);
+    map->addEdge(cityD, cityE);
+    
+    cout << "Printing all paths: " << endl;
+    map->printPaths();
+
+
+
+    delete map;
 
     return 0; 
 } 
