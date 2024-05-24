@@ -11,7 +11,6 @@ class Node{
         int travelTime;
         bool visited;
         Node* nextNode;
-        //Node* prevNode; //do i need this 
 
         Node(int id, string name, int travelTime, bool visited){
             this->id = id;
@@ -46,6 +45,7 @@ class LinkedList{
                 current = current->nextNode;
                 delete toDelete;
             }
+            delete head;
         }
 
         //add node to end of list
@@ -94,10 +94,6 @@ class LinkedList{
             head->nextNode = temp;
         }
 
-        void insert(Node* left, Node* right, Node* data){
-            
-        }
-
         void setHead(Node* head){
             this->head = head;
         }
@@ -130,10 +126,12 @@ class AdjacencyList{
     public:
         int numNodes;
         vector<LinkedList> *paths;
+        vector<vector<int>> edges;
 
         AdjacencyList(int numNodes){
             this->numNodes = numNodes;
             this->paths = new vector<LinkedList>(numNodes);
+            this->edges = vector<vector<int>>(numNodes);
         }
 
         ~AdjacencyList(){
@@ -144,9 +142,12 @@ class AdjacencyList{
             (*paths)[node->id].setHead(node);
         }
         
-        void addEdge(Node* start, Node* end){
+        void addEdge(Node* start, Node* end, int weight){
             (*paths)[start->id].append(end);
+            edges[start->id].push_back(weight);
+            
             (*paths)[end->id].append(start);
+            edges[end->id].push_back(weight);
         }
 
 
@@ -160,27 +161,39 @@ class AdjacencyList{
                     (*paths)[i].print();
                 }
                 else{
-                    cout << "Path is Empty!" << endl;
+                    cout << "Path is Empty" << endl;
                 }
             }
         }
-        
-};
 
-class Edge{
-    public:
-        string start;
-        string end;
-        string distance;
+        void printWeights(){
+            for(int i = 0; i < numNodes; i++){
+                if((*paths)[i].getHead() != ""){
+                    for(int j = 0; j < edges[i].size(); j++){
+                        cout << edges[i][j] << " ";
+                    }
+                    cout << endl;
+                }
+                else{
+                    cout << "Path is Empty" << endl;
+                }
+            }
+            cout << endl;
+        }
+
+        // LinkedList findShortestPath(Node* start, Node* end){
+
+        // }
+        
 };
   
 int main() 
 { 
-    Node* cityA = new Node(0, "0", 10, true);
-    Node* cityB = new Node(1, "1", 40, false);
-    Node* cityC = new Node(2, "2", 100, false);
-    Node* cityD = new Node(3, "3", 25, false);
-    Node* cityE = new Node(4, "4", 100, false);
+    Node* cityA = new Node(0, "0", 0, true);
+    Node* cityB = new Node(1, "1", INT_MAX, false);
+    Node* cityC = new Node(2, "2", INT_MAX, false);
+    Node* cityD = new Node(3, "3", INT_MAX, false);
+    Node* cityE = new Node(4, "4", INT_MAX, false);
 
     AdjacencyList* map = new AdjacencyList(5);
     map->addNode(cityA);
@@ -190,16 +203,18 @@ int main()
     map->addNode(cityE);
 
 
-    map->addEdge(cityA, cityB); 
-    map->addEdge(cityA, cityD);
-    map->addEdge(cityB, cityC);
-    map->addEdge(cityB, cityE);
-    map->addEdge(cityC, cityD);
-    map->addEdge(cityD, cityE);
+    map->addEdge(cityA, cityB, 2); 
+    map->addEdge(cityA, cityD, 7);
+    map->addEdge(cityB, cityC, 3);
+    map->addEdge(cityB, cityE, 4);
+    map->addEdge(cityC, cityD, 1);
+    map->addEdge(cityD, cityE, 4);
     
     cout << "Printing all paths: " << endl;
     map->printPaths();
 
+    cout << "Print all paths and weights: " << endl;
+    map->printWeights();
 
 
     delete map;
